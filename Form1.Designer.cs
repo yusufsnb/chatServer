@@ -7,7 +7,7 @@ namespace chatServer
         /// <summary>
         ///  Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -42,6 +42,8 @@ namespace chatServer
             txtMsg = new RichTextBox();
             btnSend = new Button();
             txtMessages = new TextBox();
+            label5 = new Label();
+            label6 = new Label();
             SuspendLayout();
             // 
             // txtIP
@@ -122,7 +124,7 @@ namespace chatServer
             listUsers.ItemHeight = 15;
             listUsers.Location = new Point(619, 61);
             listUsers.Name = "listUsers";
-            listUsers.Size = new Size(169, 319);
+            listUsers.Size = new Size(169, 304);
             listUsers.TabIndex = 8;
             // 
             // txtMsg
@@ -151,11 +153,31 @@ namespace chatServer
             txtMessages.Size = new Size(481, 325);
             txtMessages.TabIndex = 16;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(619, 373);
+            label5.Name = "label5";
+            label5.Size = new Size(66, 15);
+            label5.TabIndex = 17;
+            label5.Text = "User Count";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(716, 376);
+            label6.Name = "label6";
+            label6.Size = new Size(13, 15);
+            label6.TabIndex = 18;
+            label6.Text = "0";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label6);
+            Controls.Add(label5);
             Controls.Add(txtMessages);
             Controls.Add(btnSend);
             Controls.Add(txtMsg);
@@ -189,6 +211,7 @@ namespace chatServer
         private RichTextBox txtMsg;
         private Button btnSend;
         private TextBox txtMessages;
-
+        private Label label5;
+        private Label label6;
     }
 }

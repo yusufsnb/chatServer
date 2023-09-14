@@ -13,6 +13,8 @@ namespace chatServer
         public List<SocketMsg> _clientSockets { get; set; }
         List<string> _names = new List<string>();
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        static string terminated_client = "";
         public Form1()
         {
             InitializeComponent();
@@ -37,7 +39,6 @@ namespace chatServer
         #region Server
         private void setup()
         {
-
             label4.Text = "Server has started...";
             _serverSocket.Bind(new IPEndPoint(IPAddress.Parse(IP), 100));
             _serverSocket.Listen(1);
@@ -56,8 +57,41 @@ namespace chatServer
             _serverSocket.BeginAccept(new AsyncCallback(AppceptCallback), null);
         }
 
-       
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            Socket socket = (Socket)ar.AsyncState;
 
+            if (socket.Connected)
+            {
+                int received;
+                try
+                {
+                    received = socket.EndReceive(ar);//Check client still exists if client has disconnected catch and remove from lists
+                }
+                catch (Exception)
+                {
+                    foreach (SocketMsg msg in _clientSockets)
+                    {
+                        if (msg._Socket.RemoteEndPoint.ToString().Equals(socket.RemoteEndPoint.ToString()))
+                        {
+                            terminated_client = msg._Name.Substring(1, msg._Name.Length - 1);
+                            _clientSockets.Remove(msg);
+                            label6.Text = _clientSockets.Count.ToString();
+                            for (int j = 0; j < listUsers.Items.Count; j++)
+                            {
+                                if (listUsers.Items[j].Equals(terminated_client))
+                                {
+                                    listUsers.Items.RemoveAt(j);
+                                }
+                            }
+                        }
+                    }
+
+                    return;
+                }
+            }
+        }
+       
         //if pc connected to network server IP = ; no-network localhost
         private void findIP()
         {
