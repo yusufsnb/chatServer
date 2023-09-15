@@ -12,11 +12,15 @@ namespace chatServer
         private string IP;
         private int PORT;
         private byte[] _buffer = new byte[1024];
+        private string chatStoreFile = "Chat.txt";
         public List<SocketMsg> _clientSockets { get; set; }
         List<string> _names = new List<string>();
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         static string terminated_client = "";
+
+        StreamWriter sw;
+        StreamReader sr;
         public Form1()
         {
             InitializeComponent();
@@ -24,6 +28,8 @@ namespace chatServer
             _clientSockets = new List<SocketMsg>();
             Control.CheckForIllegalCrossThreadCalls = false;
         }
+
+        #region formEvents
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -37,12 +43,15 @@ namespace chatServer
                 {
                     PORT = int.Parse(txtPort.Text);
                     setup();
+                    createFile();
                 }
                 catch (Exception ex) { }
             }
         }
+
         private void btnServerStop_Click(object sender, EventArgs e)
         {
+
         }
         private void btnSend_Click(object sender, EventArgs e)
         {
@@ -59,9 +68,11 @@ namespace chatServer
                 }
             }
             txtMessages.AppendText("\nServer: " + txtMsg.Text + "\n");
+            saveChat("Server", listUsers.SelectedItem.ToString(), txtMsg.Text);
             txtMsg.Text = string.Empty;
         }
 
+        #endregion
 
         #region Server
         private void setup()
@@ -152,16 +163,18 @@ namespace chatServer
                     index = index + 2;
                     message = text.Substring(index, length);
                     send_receiving_messages(cli, text, message);
-                    recCli = text.Substring(0,index);
+                    recCli = text.Substring(0, index - 2);
                     message = message.Substring(0, message.IndexOf("*"));
                     for (int i = 0; i < _clientSockets.Count; i++)
                     {
                         if (socket.RemoteEndPoint.ToString().Equals(_clientSockets[i]._Socket.RemoteEndPoint.ToString()))
                         {
-                            txtMessages.AppendText($"\n {_clientSockets[i]._Name.Substring(1)} --> {recCli} :: {message} \n");
+                            txtMessages.AppendText($"\n {_clientSockets[i]._Name.Substring(1)} --> {recCli} {message} \n");
+                            saveChat(_clientSockets[i]._Name.Substring(1), recCli, message);
 
                         }
                     }
+
                 }
                 else
                 {
@@ -258,6 +271,33 @@ namespace chatServer
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                     IP = ip.ToString();
             }
+        }
+        #endregion
+
+        #region Store
+
+        private void createFile()
+        {
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), chatStoreFile);
+            using (StreamWriter sw = File.CreateText(path)) ;
+        }
+
+        private void saveChat(string sendingCli, string receivingCli, string message)
+        {
+            sw = new StreamWriter(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), chatStoreFile), true);
+            sw.WriteLine($"{sendingCli}\t{receivingCli}\t{message}");
+            sw.Close();
+        }
+
+        private void loadChat()
+        {
+
+        }
+
+        private void dropChatFile()
+        {
+
         }
         #endregion
     }
