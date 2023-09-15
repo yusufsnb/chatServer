@@ -137,44 +137,51 @@ namespace chatServer
                     string text = Encoding.ASCII.GetString(dataBuf);
                     Debug.WriteLine("receiving message " + text);
                     string reponse = string.Empty;
-
-                    if (text.Contains("@@"))
+                    if (text.Contains("filtering**"))
                     {
-                        for (int i = 0; i < listUsers.Items.Count; i++)
+
+                    }
+                    else
+                    {
+
+                        if (text.Contains("@@"))
+                        {
+                            for (int i = 0; i < listUsers.Items.Count; i++)
+                            {
+                                if (socket.RemoteEndPoint.ToString().Equals(_clientSockets[i]._Socket.RemoteEndPoint.ToString()))
+                                {
+                                    listUsers.Items.RemoveAt(i);
+                                    listUsers.Items.Insert(i, text.Substring(1, text.Length - 1));
+                                    _clientSockets[i]._Name = text;
+                                    socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+                                    sendNicknames();
+
+                                    return;
+                                }
+                            }
+                        }
+                        int index = text.IndexOf(" ");
+                        string cli = text.Substring(0, index);
+                        string recCli;
+
+                        string message = string.Empty;
+                        int length = (text.Length) - (index + 2);
+                        index = index + 2;
+                        message = text.Substring(index, length);
+                        send_receiving_messages(cli, text, message);
+                        recCli = text.Substring(0, index - 2);
+                        message = message.Substring(0, message.IndexOf("*"));
+                        for (int i = 0; i < _clientSockets.Count; i++)
                         {
                             if (socket.RemoteEndPoint.ToString().Equals(_clientSockets[i]._Socket.RemoteEndPoint.ToString()))
                             {
-                                listUsers.Items.RemoveAt(i);
-                                listUsers.Items.Insert(i, text.Substring(1, text.Length - 1));
-                                _clientSockets[i]._Name = text;
-                                socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
-                                sendNicknames();
+                                txtMessages.AppendText($"\n {_clientSockets[i]._Name.Substring(1)} --> {recCli} {message} \n");
+                                saveChat(_clientSockets[i]._Name.Substring(1), recCli, message);
 
-                                return;
                             }
                         }
+
                     }
-                    int index = text.IndexOf(" ");
-                    string cli = text.Substring(0, index);
-                    string recCli;
-
-                    string message = string.Empty;
-                    int length = (text.Length) - (index + 2);
-                    index = index + 2;
-                    message = text.Substring(index, length);
-                    send_receiving_messages(cli, text, message);
-                    recCli = text.Substring(0, index - 2);
-                    message = message.Substring(0, message.IndexOf("*"));
-                    for (int i = 0; i < _clientSockets.Count; i++)
-                    {
-                        if (socket.RemoteEndPoint.ToString().Equals(_clientSockets[i]._Socket.RemoteEndPoint.ToString()))
-                        {
-                            txtMessages.AppendText($"\n {_clientSockets[i]._Name.Substring(1)} --> {recCli} {message} \n");
-                            saveChat(_clientSockets[i]._Name.Substring(1), recCli, message);
-
-                        }
-                    }
-
                 }
                 else
                 {
@@ -272,6 +279,7 @@ namespace chatServer
                     IP = ip.ToString();
             }
         }
+
         #endregion
 
         #region Store
@@ -296,6 +304,28 @@ namespace chatServer
         }
 
         private void dropChatFile()
+        {
+
+        }
+        #endregion
+
+        #region Filtering
+
+        private void allChatFiltering()
+        {
+
+        }
+        private void filterWithSendTo()
+        {
+
+        }
+
+        private void filterWithLastXMessages()
+        {
+
+        }
+
+        private void filterWithContains()
         {
 
         }
