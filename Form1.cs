@@ -11,7 +11,7 @@ namespace chatServer
     {
         private string IP;
         private int PORT;
-        private byte[] _buffer = new byte[1024];//verinin boyutu
+        private byte[] _buffer = new byte[1024];
         public List<SocketMsg> _clientSockets { get; set; }
         List<string> _names = new List<string>();
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -54,11 +54,12 @@ namespace chatServer
                     if (_clientSockets[j]._Socket.Connected && _clientSockets[j]._Name.Equals("@" + t))
 
                     {
-                        Sendata(_clientSockets[j]._Socket, txtMsg.Text);//mesajý gönder
+                        Sendata(_clientSockets[j]._Socket, txtMsg.Text);
                     }
                 }
             }
-            txtMessages.AppendText("\nServer: " + txtMsg.Text);
+            txtMessages.AppendText("\nServer: " + txtMsg.Text + "\n");
+            txtMsg.Text = string.Empty;
         }
 
 
@@ -144,17 +145,20 @@ namespace chatServer
                     }
                     int index = text.IndexOf(" ");
                     string cli = text.Substring(0, index);
+                    string recCli;
 
                     string message = string.Empty;
                     int length = (text.Length) - (index + 2);
                     index = index + 2;
                     message = text.Substring(index, length);
                     send_receiving_messages(cli, text, message);
+                    recCli = text.Substring(0,index);
+                    message = message.Substring(0, message.IndexOf("*"));
                     for (int i = 0; i < _clientSockets.Count; i++)
                     {
                         if (socket.RemoteEndPoint.ToString().Equals(_clientSockets[i]._Socket.RemoteEndPoint.ToString()))
                         {
-                            txtMessages.AppendText("\n" + _clientSockets[i]._Name + ": " + text);
+                            txtMessages.AppendText($"\n {_clientSockets[i]._Name.Substring(1)} --> {recCli} :: {message} \n");
 
                         }
                     }
@@ -171,7 +175,7 @@ namespace chatServer
                     }
                 }
             }
-            socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);//almaya baþla soketten ReceiveCallback recursive
+            socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
         }
 
         private void removeFromClients(string term_cli)
@@ -195,25 +199,22 @@ namespace chatServer
                     for (int i = 0; i < listUsers.Items.Count; i++)//listedeki isimler kadar
                     {
 
-
                         Sendata(_clientSockets[j]._Socket, listUsers.Items[i].ToString());
 
                         Thread.Sleep(20);
                     }
-
                 }
             }
         }
 
         public void send_receiving_messages(string cli, string text, string message)
         {
-            string parcc = text.Substring(2, 2);
             cli = "@" + cli;
 
 
-            int ind__ = (message.IndexOf("*") + 1);
-            string piece = message.Substring(ind__, message.Length - ind__);
-            string mess = message.Substring(0, (ind__ - 1));
+            int index = (message.IndexOf("*") + 1);
+            string piece = message.Substring(index, message.Length - index);
+            string mess = message.Substring(0, (index - 1));
             string send = piece + ": " + mess;
 
             try

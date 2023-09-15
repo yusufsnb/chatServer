@@ -41,9 +41,9 @@ namespace chatServer
             listUsers = new ListBox();
             txtMsg = new RichTextBox();
             btnSend = new Button();
-            txtMessages = new TextBox();
             label5 = new Label();
             label6 = new Label();
+            txtMessages = new RichTextBox();
             SuspendLayout();
             // 
             // txtIP
@@ -145,14 +145,6 @@ namespace chatServer
             btnSend.UseVisualStyleBackColor = true;
             btnSend.Click += btnSend_Click;
             // 
-            // txtMessages
-            // 
-            txtMessages.Location = new Point(12, 63);
-            txtMessages.Multiline = true;
-            txtMessages.Name = "txtMessages";
-            txtMessages.Size = new Size(481, 325);
-            txtMessages.TabIndex = 16;
-            // 
             // label5
             // 
             label5.AutoSize = true;
@@ -171,14 +163,22 @@ namespace chatServer
             label6.TabIndex = 18;
             label6.Text = "0";
             // 
+            // txtMessages
+            // 
+            txtMessages.Location = new Point(12, 61);
+            txtMessages.Name = "txtMessages";
+            txtMessages.Size = new Size(601, 327);
+            txtMessages.TabIndex = 19;
+            txtMessages.Text = "";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtMessages);
             Controls.Add(label6);
             Controls.Add(label5);
-            Controls.Add(txtMessages);
             Controls.Add(btnSend);
             Controls.Add(txtMsg);
             Controls.Add(listUsers);
@@ -210,8 +210,8 @@ namespace chatServer
         private ListBox listUsers;
         private RichTextBox txtMsg;
         private Button btnSend;
-        private TextBox txtMessages;
         private Label label5;
         private Label label6;
+        private RichTextBox txtMessages;
     }
 }
