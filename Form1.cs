@@ -118,7 +118,23 @@ namespace chatServer
                 }
                 catch (Exception)
                 {
-                    removeSocket(socket);
+                    for (int i = 0; i < _clientSockets.Count; i++)
+                    {
+                        if (_clientSockets[i]._Socket.RemoteEndPoint.ToString().Equals(socket.RemoteEndPoint.ToString()))
+                        {
+                            terminated_client = _clientSockets[i]._Name.Substring(1, _clientSockets[i]._Name.Length - 1);
+                            _clientSockets.RemoveAt(i);
+                            label6.Text = _clientSockets.Count.ToString();
+                            for (int j = 0; j < listUsers.Items.Count; j++)
+                            {
+                                if (listUsers.Items[j].Equals(terminated_client))
+                                {
+                                    listUsers.Items.RemoveAt(j);
+                                }
+                            }
+                        }
+                    }
+                    removeFromClients(terminated_client);
                     return;
                 }
                 if (received != 0)
@@ -203,27 +219,6 @@ namespace chatServer
 
         #endregion
 
-        private void removeSocket(Socket socket)
-        {
-            for (int i = 0; i < _clientSockets.Count; i++)
-            {
-                if (_clientSockets[i]._Socket.RemoteEndPoint.ToString().Equals(socket.RemoteEndPoint.ToString()))
-                {
-                    terminated_client = _clientSockets[i]._Name.Substring(1, _clientSockets[i]._Name.Length - 1);
-                    _clientSockets.RemoveAt(i);
-                    label6.Text = _clientSockets.Count.ToString();
-                    for (int j = 0; j < listUsers.Items.Count; j++)
-                    {
-                        if (listUsers.Items[j].Equals(terminated_client))
-                        {
-                            listUsers.Items.RemoveAt(j);
-                        }
-                    }
-                }
-            }
-            removeFromClients(terminated_client);
-        }
-
         private void removeFromClients(string term_cli) //Removing disconnected client
         {
             string remove = "remove*" + term_cli;
@@ -257,7 +252,7 @@ namespace chatServer
         //Send receiving client message to other client
         public void send_receiving_messages(string cli, string text, string message)
         {
-            cli += "@";
+            cli = "@" + cli;
 
             int index = (message.IndexOf("*") + 1);
             string piece = message.Substring(index, message.Length - index);
@@ -292,7 +287,7 @@ namespace chatServer
 
         void SendFilterData(Socket socket, List<string> filteringMsgs)
         {
-            string text = "filtering**" + String.Join("", filteringMsgs);
+            string text = "filtering**" + String.Join("\n", filteringMsgs);
             byte[] data = Encoding.UTF8.GetBytes(text);
             socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallback), socket);
             _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), null);
@@ -373,7 +368,7 @@ namespace chatServer
                 string[] values = msg.Split("\t");
                 if (filteringOn)
                 {
-                    if (filter)
+                    if (!filter)
                     {
                         if (values[0].Equals(clientName))
                             filteringList.Add(msg);
@@ -396,6 +391,8 @@ namespace chatServer
         private List<string> filterWithLastXMessages(List<string> msgList, int count)
         {
             List<string> filteringList = new List<string>();
+            if (count > filteringList.Count)
+                count = filteringList.Count;
             filteringList = msgList.TakeLast(count).ToList();
             return filteringList;
         }
