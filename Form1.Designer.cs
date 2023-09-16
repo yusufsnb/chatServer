@@ -35,7 +35,6 @@ namespace chatServer
             label1 = new Label();
             label2 = new Label();
             btnStartServer = new Button();
-            btnServerStop = new Button();
             label3 = new Label();
             label4 = new Label();
             listUsers = new ListBox();
@@ -82,23 +81,13 @@ namespace chatServer
             // 
             // btnStartServer
             // 
-            btnStartServer.Location = new Point(349, 10);
+            btnStartServer.Location = new Point(425, 10);
             btnStartServer.Name = "btnStartServer";
             btnStartServer.Size = new Size(86, 47);
             btnStartServer.TabIndex = 4;
             btnStartServer.Text = "START";
             btnStartServer.UseVisualStyleBackColor = true;
             btnStartServer.Click += btnStartServer_Click;
-            // 
-            // btnServerStop
-            // 
-            btnServerStop.Location = new Point(441, 10);
-            btnServerStop.Name = "btnServerStop";
-            btnServerStop.Size = new Size(86, 47);
-            btnServerStop.TabIndex = 5;
-            btnServerStop.Text = "STOP";
-            btnServerStop.UseVisualStyleBackColor = true;
-            btnServerStop.Click += btnServerStop_Click;
             // 
             // label3
             // 
@@ -124,6 +113,7 @@ namespace chatServer
             listUsers.ItemHeight = 15;
             listUsers.Location = new Point(619, 61);
             listUsers.Name = "listUsers";
+            listUsers.SelectionMode = SelectionMode.MultiExtended;
             listUsers.Size = new Size(169, 304);
             listUsers.TabIndex = 8;
             // 
@@ -184,7 +174,6 @@ namespace chatServer
             Controls.Add(listUsers);
             Controls.Add(label4);
             Controls.Add(label3);
-            Controls.Add(btnServerStop);
             Controls.Add(btnStartServer);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -204,7 +193,6 @@ namespace chatServer
         private Label label1;
         private Label label2;
         private Button btnStartServer;
-        private Button btnServerStop;
         private Label label3;
         private Label label4;
         private ListBox listUsers;
